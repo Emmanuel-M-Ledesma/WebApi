@@ -36,13 +36,10 @@ namespace WebApi.Shared.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Telefono")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Telefono")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Id" }, "UQ_Id_Proveedor")
-                        .IsUnique();
 
                     b.ToTable("Proveedores");
                 });
