@@ -9,8 +9,8 @@ using WebApi.Shared.Data;
 namespace WebApi.Shared.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210830195854_Proveedores")]
-    partial class Proveedores
+    [Migration("20210830205859_CorreccionMigracion")]
+    partial class CorreccionMigracion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,13 +38,10 @@ namespace WebApi.Shared.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Telefono")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Telefono")
+                        .HasColumnType("decimal(20,0)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Id" }, "UQ_Id_Proveedor")
-                        .IsUnique();
 
                     b.ToTable("Proveedores");
                 });
