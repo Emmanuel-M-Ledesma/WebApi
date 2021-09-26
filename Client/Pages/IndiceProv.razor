@@ -26,8 +26,8 @@
                 <td>@item.Id</td>
                 <td>@item.NombreProvedor</td>
                 <td>@item.Empresa</td>
-                <td><button class="button button2" @onclick="()=>Editar(item)">Editar</button></td>
-                <td><button class="button button3" @onclick="()=>Eliminar(item)">Borrar</button></td>
+                <td><button class="button button2" @onclick="()=>Editar(item)">Editar</button><button class="button button3" @onclick="()=>Eliminar(item)">Borrar</button></td>
+                
             </tr>
         }
     }
@@ -56,14 +56,14 @@
     <input placeholder=" ID de proveedor" @bind="ID" />
     <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
     <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
-    <button class="button button2" @onclick="ConfirmEdit">Agregar</button>
+    <button class="button button2" @onclick="ConfirmEdit">Modificar</button>
     <button class="button button4" @onclick="Cancelar">Cancelar</button>
 }
 @if (eliminar)
 {
     <br />
     <h3>Eliminar Proveedor</h3>
-    <br />
+    <br />   
     <input placeholder=" ID de proveedor" @bind="ID" />
     <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
     <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
@@ -158,7 +158,7 @@
         .button {
             border: none;
             color: white;
-            padding: 6px 20px;
+            padding: 6px 10px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -211,5 +211,25 @@
                 color: white;
             }
         /*orange*/
+    </style>
+</head>
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+        
     </style>
 </head>
