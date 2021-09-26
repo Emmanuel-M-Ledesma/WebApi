@@ -1,0 +1,215 @@
+﻿@page "/proveedores"
+
+<h3>Lista de Proveedores</h3>
+<br />
+<button class="button button1" @onclick="()=>Nuevo=true">Nuevo</button>
+<br />
+<table>
+    <tr>
+        <th>Codigo</th>
+        <th>Nombre</th>
+        <th>Empresa</th>
+    </tr>
+    @if (proveedores == null)
+    {
+        <tr>Cargando....</tr>
+    }
+    else if (proveedores.Count == 0)
+    {
+        <tr>NO existen proveedores</tr>
+    }
+    else
+    {
+        @foreach (var item in proveedores)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.NombreProvedor</td>
+                <td>@item.Empresa</td>
+                <td><button class="button button2" @onclick="()=>Editar(item)">Editar</button></td>
+                <td><button class="button button3" @onclick="()=>Eliminar(item)">Borrar</button></td>
+            </tr>
+        }
+    }
+</table>
+@if (Nuevo)
+{
+    @if (Edit || eliminar)
+    {
+        Cancelar();
+        Nuevo = true;
+    }
+    <br />
+    <h3>Nuevo Proveedor</h3>
+    <br />
+    <input placeholder=" ID de proveedor" @bind="ID" />
+    <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
+    <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
+    <button class="button button2" @onclick="AddProveedor">Agregar</button>
+    <button class="button button4" @onclick="Cancelar">Cancelar</button>
+}
+@if (Edit)
+{
+    <br />
+    <h3>Editar Proveedor</h3>
+    <br />
+    <input placeholder=" ID de proveedor" @bind="ID" />
+    <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
+    <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
+    <button class="button button2" @onclick="ConfirmEdit">Agregar</button>
+    <button class="button button4" @onclick="Cancelar">Cancelar</button>
+}
+@if (eliminar)
+{
+    <br />
+    <h3>Eliminar Proveedor</h3>
+    <br />
+    <input placeholder=" ID de proveedor" @bind="ID" />
+    <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
+    <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
+    <button class="button button3" @onclick="ConfirmDel">Borrar</button>
+    <button class="button button4" @onclick="Cancelar">Cancelar</button>
+}
+
+@code {
+    List<Proveedor> proveedores = new();
+    int ID;
+    string NombreProv = "";
+    string EmpresaProv = "";
+    bool Nuevo = false;
+    bool Edit = false;
+    bool eliminar = false;
+    Proveedor editPRov;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        proveedores = new()
+        {
+            new Proveedor() { Id = 1, NombreProvedor = "Pepe", Empresa = "arcor" },
+            new Proveedor() { Id = 2, NombreProvedor = "Emmanuel", Empresa = "sancor" }
+
+
+        };
+    }
+
+    private void AddProveedor()
+    {
+        Proveedor proveedor = new();
+        proveedor.Id = ID;
+        proveedor.NombreProvedor = NombreProv;
+        proveedor.Empresa = EmpresaProv;
+        proveedores.Add(proveedor);
+        Cancelar();
+    }
+    private void Cancelar()
+    {
+        eliminar = false;
+        editPRov = null;
+        Nuevo = false;
+        Edit = false;
+        ID = 0;
+        NombreProv = "";
+        EmpresaProv = "";
+
+    }
+    private void Editar(Proveedor provEdit)
+    {
+        if (Nuevo || eliminar)
+        {
+            Cancelar();
+            Edit = true;
+        }
+        Edit = true;
+        ID = provEdit.Id;
+        NombreProv = provEdit.NombreProvedor;
+        EmpresaProv = provEdit.Empresa;
+        editPRov = provEdit;
+    }
+    private void ConfirmEdit()
+    {
+        proveedores.Remove(editPRov);
+        proveedores.Add(new Proveedor() { Id = ID, NombreProvedor = NombreProv, Empresa = EmpresaProv });
+        Cancelar();
+
+    }
+    private void Eliminar(Proveedor provEliminar)
+    {
+        if (Nuevo || Edit)
+        {
+            Cancelar();
+            eliminar = true;
+        }
+        eliminar = true;
+        ID = provEliminar.Id;
+        NombreProv = provEliminar.NombreProvedor;
+        EmpresaProv = provEliminar.Empresa;
+        editPRov = provEliminar;
+    }
+    private void ConfirmDel()
+    {
+        proveedores.Remove(editPRov);
+        Cancelar();
+    }
+}
+<head>
+    <style>
+        .button {
+            border: none;
+            color: white;
+            padding: 6px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        .button1 {
+            background-color: white;
+            color: black;
+            border: 2px solid #4CAF50;
+        }
+
+            .button1:hover {
+                background-color: #4CAF50;
+                color: white;
+            }
+        /* Green */
+        .button2 {
+            background-color: white;
+            color: black;
+            border: 2px solid #008CBA;
+        }
+
+            .button2:hover {
+                background-color: #008CBA;
+                color: white;
+            }
+        /* Blue */
+        .button3 {
+            background-color: white;
+            color: black;
+            border: 2px solid #ff0000;
+        }
+
+            .button3:hover {
+                background-color: #ff0000;
+                color: white;
+            }
+        /*Red*/
+        .button4 {
+            background-color: white;
+            color: black;
+            border: 2px solid #ff6a00;
+        }
+
+            .button4:hover {
+                background-color: #ff6a00;
+                color: white;
+            }
+        /*orange*/
+    </style>
+</head>
