@@ -1,0 +1,29 @@
+﻿@page "/proveedores/crear"
+@inject NavigationManager navigationManager
+@inject IHttpService http
+
+<h2>Nuevo Proveedor</h2>
+
+<ProveedorFormulario onValidSubmit="GrabarNuevo" Proveedor="proveedor" onCancel="Cancelar" />
+
+
+
+@code {
+    private Proveedor proveedor = new();
+
+    private async Task GrabarNuevo()
+    {
+        var RespPost = await http.Post<WebApi.Shared.Data.Entity.Proveedor>("api/Proveedorees", proveedor);
+        if (RespPost.Error)
+        {
+            var body = await RespPost.GetBody();
+
+        }
+        navigationManager.NavigateTo("/proveedores");
+    }
+
+    private void Cancelar()
+    {
+        navigationManager.NavigateTo("/proveedores");
+    }
+}

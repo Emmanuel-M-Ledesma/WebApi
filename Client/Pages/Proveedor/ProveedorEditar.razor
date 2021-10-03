@@ -1,0 +1,47 @@
+﻿@page "/proveedor/editar/{ProvID:int}"
+@inject NavigationManager navigationManager
+@inject IHttpService http
+
+<h2>Modificar Proveedor</h2>
+
+<ProveedorFormulario onValidSubmit="GrabarMod" Proveedor="proveedor" onCancel="Cancelar"/>
+@code {
+    private Proveedor proveedor;
+
+    [Parameter] public int ProvID { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        
+        await MostrarProv();
+    }
+
+    private async Task MostrarProv()
+    {
+        var httpResp = await http.Get<Proveedor>($"api/Proveedorees/{ProvID}");
+        if (httpResp.Error)
+        {
+            var body = await httpResp.GetBody();
+        }
+        else
+        {
+            proveedor = httpResp.Respuesta;
+        }
+    }
+
+    private async Task GrabarMod()
+    {
+        var httpResp = await http.Put<Proveedor>($"api/Proveedorees/{ProvID}", proveedor);
+        if (httpResp.Error)
+        {
+            var body = await httpResp.GetBody();
+
+        }
+        navigationManager.NavigateTo("/proveedores");
+    }
+
+    private void Cancelar()
+    {
+        navigationManager.NavigateTo("/proveedores");
+    }
+}

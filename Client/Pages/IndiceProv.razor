@@ -1,18 +1,21 @@
 ﻿@page "/proveedores"
-
-<h3>Lista de Proveedores</h3>
+@inject IHttpService http
+<h2>Lista de Proveedores</h2>
 <br />
-<button class="button button1" @onclick="()=>Nuevo=true">Nuevo</button>
+<a class="btn btn-primary" href="proveedores/crear">Nuevo</a>
+<br />
 <br />
 <table>
     <tr>
         <th>Codigo</th>
         <th>Nombre</th>
         <th>Empresa</th>
+        <th>Telefono</th>
+        <th>Descripcion</th>
     </tr>
     @if (proveedores == null)
     {
-        <tr>Cargando....</tr>
+        <tr>Cargando...</tr>
     }
     else if (proveedores.Count == 0)
     {
@@ -26,132 +29,76 @@
                 <td>@item.Id</td>
                 <td>@item.NombreProvedor</td>
                 <td>@item.Empresa</td>
-                <td><button class="button button2" @onclick="()=>Editar(item)">Editar</button><button class="button button3" @onclick="()=>Eliminar(item)">Borrar</button></td>
-                
+                <td>@item.Telefono</td>
+                <td>@item.Descripcion</td>
+                <td><a class=" button button2" 
+                       href="/proveedor/editar/@item.Id">
+                    Editar                    
+                    </a><button class="button button3" @onclick="()=>Eliminar(item)">Eliminar</button>
+                </td>                
             </tr>
         }
     }
 </table>
-@if (Nuevo)
-{
-    @if (Edit || eliminar)
-    {
-        Cancelar();
-        Nuevo = true;
-    }
-    <br />
-    <h3>Nuevo Proveedor</h3>
-    <br />
-    <input placeholder=" ID de proveedor" @bind="ID" />
-    <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
-    <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
-    <button class="button button2" @onclick="AddProveedor">Agregar</button>
-    <button class="button button4" @onclick="Cancelar">Cancelar</button>
-}
-@if (Edit)
-{
-    <br />
-    <h3>Editar Proveedor</h3>
-    <br />
-    <input placeholder=" ID de proveedor" @bind="ID" />
-    <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
-    <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
-    <button class="button button2" @onclick="ConfirmEdit">Modificar</button>
-    <button class="button button4" @onclick="Cancelar">Cancelar</button>
-}
-@if (eliminar)
-{
-    <br />
-    <h3>Eliminar Proveedor</h3>
-    <br />   
-    <input placeholder=" ID de proveedor" @bind="ID" />
-    <input placeholder=" Nombre de proveedor" @bind="NombreProv" />
-    <input placeholder=" Empresa de proveedor" @bind="EmpresaProv" />
-    <button class="button button3" @onclick="ConfirmDel">Borrar</button>
-    <button class="button button4" @onclick="Cancelar">Cancelar</button>
-}
+<Confirmacion @ref="confirmacion"
+              onConfirm="ConfirmDel"
+              onCancel="Cancelar"
+              Titulo="Borrar"
+              textCancelar="Salir"
+              textOk="Aceptar"
+              >
+    <div>Desea eliminar el proveedor @eliminarProv.NombreProvedor?</div>
+
+</Confirmacion>
 
 @code {
-    List<Proveedor> proveedores = new();
-    int ID;
-    string NombreProv = "";
-    string EmpresaProv = "";
-    bool Nuevo = false;
-    bool Edit = false;
-    bool eliminar = false;
-    Proveedor editPRov;
+    List<WebApi.Shared.Data.Entity.Proveedor> proveedores;
+    Confirmacion confirmacion;
+    WebApi.Shared.Data.Entity.Proveedor eliminarProv;
 
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-        proveedores = new()
-        {
-            new Proveedor() { Id = 1, NombreProvedor = "Pepe", Empresa = "arcor" },
-            new Proveedor() { Id = 2, NombreProvedor = "Emmanuel", Empresa = "sancor" }
-
-
-        };
+        await Leer();
     }
 
-    private void AddProveedor()
+    private async Task Leer()
     {
-        Proveedor proveedor = new();
-        proveedor.Id = ID;
-        proveedor.NombreProvedor = NombreProv;
-        proveedor.Empresa = EmpresaProv;
-        proveedores.Add(proveedor);
-        Cancelar();
+        var respHttp = await http.Get<List<WebApi.Shared.Data.Entity.Proveedor>>("api/Proveedorees");
+        if (!respHttp.Error)
+        {
+            proveedores = respHttp.Respuesta;
+
+        }
     }
+
+    private void Eliminar(WebApi.Shared.Data.Entity.Proveedor provEliminar)
+    {
+        confirmacion.Mostrar();
+        eliminarProv = provEliminar;
+    }
+
+    private async Task ConfirmDel()
+    {
+        var resp = await http.Delete($"api/Proveedorees/{eliminarProv.Id}");
+        if (resp.Error)
+        {
+            var body = await resp.GetBody();
+        }
+        Cancelar();
+        await Leer();
+    }
+
     private void Cancelar()
     {
-        eliminar = false;
-        editPRov = null;
-        Nuevo = false;
-        Edit = false;
-        ID = 0;
-        NombreProv = "";
-        EmpresaProv = "";
+        confirmacion.Ocultar();
+        eliminarProv = null;
+
 
     }
-    private void Editar(Proveedor provEdit)
-    {
-        if (Nuevo || eliminar)
-        {
-            Cancelar();
-            Edit = true;
-        }
-        Edit = true;
-        ID = provEdit.Id;
-        NombreProv = provEdit.NombreProvedor;
-        EmpresaProv = provEdit.Empresa;
-        editPRov = provEdit;
-    }
-    private void ConfirmEdit()
-    {
-        proveedores.Remove(editPRov);
-        proveedores.Add(new Proveedor() { Id = ID, NombreProvedor = NombreProv, Empresa = EmpresaProv });
-        Cancelar();
 
-    }
-    private void Eliminar(Proveedor provEliminar)
-    {
-        if (Nuevo || Edit)
-        {
-            Cancelar();
-            eliminar = true;
-        }
-        eliminar = true;
-        ID = provEliminar.Id;
-        NombreProv = provEliminar.NombreProvedor;
-        EmpresaProv = provEliminar.Empresa;
-        editPRov = provEliminar;
-    }
-    private void ConfirmDel()
-    {
-        proveedores.Remove(editPRov);
-        Cancelar();
-    }
+
 }
 <head>
     <style>
