@@ -18,7 +18,8 @@ namespace WebApi.Client.Services
         }
 
         public async Task<HttpRespuesta<T>> Get<T>(string url)
-        {
+        { 
+            //Error en editar
             var RespGet = await httpClient.GetAsync(url);
             if (RespGet.IsSuccessStatusCode)
             {

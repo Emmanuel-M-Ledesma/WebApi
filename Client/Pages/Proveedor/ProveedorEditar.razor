@@ -11,21 +11,20 @@
     [Parameter] public int ProvID { get; set; }
 
     protected async override Task OnInitializedAsync()
-    {
-        
+    {        
         await MostrarProv();
     }
 
     private async Task MostrarProv()
     {
-        var httpResp = await http.Get<Proveedor>($"api/Proveedorees/{ProvID}");
-        if (httpResp.Error)
+        var RespGet = await http.Get<Proveedor>($"api/Proveedorees/{ProvID}");
+        if (RespGet.Error)
         {
-            var body = await httpResp.GetBody();
+            var body = await RespGet.GetBody();
         }
         else
         {
-            proveedor = httpResp.Respuesta;
+            proveedor = RespGet.Respuesta;
         }
     }
 
